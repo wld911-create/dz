@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D7H Cfx Finder</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    text-align:center;
+    background-color:#0a0a0a;
+    color:#fff;
+    overflow:hidden;
+  }
+  header{
+    position:fixed;
+    top:0;
+    width:100%;
+    background: rgba(0,0,0,0.8);
+    padding:1rem 2rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:100;
+    box-shadow:0 0 15px #0005;
+  }
+  header .join-btn{
+    background:#ff0000;
+    color:white;
+    padding:0.5rem 1.2rem;
+    border-radius:15px;
+    text-decoration:none;
+    font-weight:bold;
+    transition:0.3s;
+  }
+  header .join-btn:hover{
+    background:#ff4d4d;
+    transform:scale(1.05);
+  }
+  main{
+    padding-top:120px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    width:100%;
+    max-width:600px;
+    z-index:1;
+    position:relative;
+  }
+  h1{
+    font-size:2.5rem;
+    margin-bottom:1rem;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+  }
+  .input-container{
+    display:flex;
+    gap:10px;
+    margin-bottom:1rem;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  input[type=text]{
+    padding:0.5rem 1rem;
+    border-radius:8px;
+    border:none;
+    width:250px;
+    outline:none;
+    font-size:1rem;
+    transition:box-shadow 0.3s;
+    background-color:#1a1a1a;
+    color:#fff;
+  }
+  input[type=text]:focus{
+    box-shadow:0 0 10px #ff0000;
+  }
+  button{
+    background:#ff0000;
+    color:white;
+    border:none;
+    padding:0.5rem 1rem;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:1rem;
+    transition:0.3s;
+  }
+  button:hover{
+    background:#ff4d4d;
+    transform:scale(1.05);
+  }
+  .info-box, .ip-details-box, .popup-content, #customPopup{
+    background: rgba(30,30,30,0.9);
+    padding:1rem 2rem;
+    border-radius:10px;
+    max-width:100%;
+    margin-top:1rem;
+    word-wrap:break-word;
+  }
+  .links{
+    margin-top:10px;
+    display:none;
+  }
+  .links a{
+    color:#ff4d4d;
+    text-decoration:underline;
+    margin-right:1rem;
+  }
+  #customPopup{
+    display:none;
+    position:fixed;
+    top:20%;
+    left:50%;
+    transform:translateX(-50%);
+    padding:1rem 2rem;
+    border-radius:10px;
+    color:white;
+    box-shadow:0 0 10px black;
+    z-index:1000;
+  }
+  .close-btn{
+    margin-top:1rem;
+    background:#ff0000;
+    color:white;
+    border:none;
+    padding:0.4rem 1rem;
+    border-radius:8px;
+    cursor:pointer;
+  }
+  .popup{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+  }
+  .popup-content{
+    background: rgba(30,30,30,0.95);
+    padding: 2rem;
+    border-radius:12px;
+    color:white;
+    max-width:600px;
+    width:90%;
+    max-height:80vh;
+    overflow-y:auto;
+  }
+
+  canvas#gridCanvas{
+    position:fixed;
+    top:0;
+    left:0;
+    z-index:0;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="gridCanvas"></canvas>
+
+<header>
+  <a href="#" class="home-link" title="D7H">
+    <img src="https://i.pinimg.com/originals/b4/f1/8c/b4f18c5a8f82c0fa09cf04ae0a3612ee.gif" alt="D7H" style="width:40px;height:40px;">
+  </a>
+  <a href="https://discord.gg/3EH6GKHru9" class="join-btn" target="_blank">انضم إلى 190!</a>
+</header>
+
+<main>
+  <img src="https://i.pinimg.com/originals/5d/1d/fb/5d1dfb2c893ab36d4270969d7873bc35.gif" alt="Banner" class="header-image" style="max-width:150px;margin-bottom:15px;">
+  <h1>D7H Cfx Finder</h1>
+  <div class="input-container">
+    <input type="text" id="cfxUrl" placeholder="أدخل رابط CFX (cfx.re/join/anycode)">
+    <button onclick="getServerIP()">ابحث عن IP</button>
+  </div>
+  <div class="info-box" id="result">أدخل كود CFX لعرض المعلومات...</div>
+  <div class="ip-details-box"></div>
+
+  <div id="customPopup">
+    <p>لقد استخدمت الأداة 3 مرات اليوم. يرجى الانضمام إلى Discord للاستمرار.</p>
+    <button class="close-btn" onclick="closePopup()">إغلاق</button>
+  </div>
+
+  <div class="links">
+    <a id="playersLink" target="_blank">JSON اللاعبين</a>
+    <a id="infoLink" target="_blank">معلومات الخادم</a>
+    <button id="moreInfoBtn" onclick="showMoreInfo()">عرض المزيد من المعلومات</button>
+  </div>
+
+  <div id="moreInfoPopup" class="popup">
+    <div class="popup-content">
+      <h2>تفاصيل الخادم</h2>
+      <div id="playersList"></div>
+      <div id="resourcesList"></div>
+      <button class="close-btn" onclick="closeMoreInfo()">إغلاق</button>
+    </div>
+  </div>
+</main>
+
+<script>
+// تحريك شبكة الخطوط الحمراء
+const canvas = document.getElementById('gridCanvas');
+const ctx = canvas.getContext('2d');
+let width = canvas.width = window.innerWidth;
+let height = canvas.height = window.innerHeight;
+
+const lines = [];
+const spacing = 80; // المسافة بين الخطوط
+const speed = 0.5; // سرعة التحرك
+
+for(let x = 0; x <= width; x += spacing){
+  lines.push({x: x, yOffset: Math.random()*50});
+}
+for(let y = 0; y <= height; y += spacing){
+  lines.push({y: y, xOffset: Math.random()*50});
+}
+
+function draw(){
+  ctx.clearRect(0,0,width,height);
+  ctx.strokeStyle = 'rgba(255,0,0,0.15)';
+  ctx.lineWidth = 1;
+
+  // خطوط عمودية
+  for(let x = 0; x <= width; x += spacing){
+    let offset = (Date.now()/50)%spacing;
+    ctx.beginPath();
+    ctx.moveTo(x+offset,0);
+    ctx.lineTo(x+offset,height);
+    ctx.stroke();
+  }
+
+  // خطوط افقية
+  for(let y = 0; y <= height; y += spacing){
+    let offset = (Date.now()/50)%spacing;
+    ctx.beginPath();
+    ctx.moveTo(0,y+offset);
+    ctx.lineTo(width,y+offset);
+    ctx.stroke();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+window.addEventListener('resize', ()=>{
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+});
+
+  const ipApiBaseUrl = 'https://ip-api.com/json';
+  let searchCount = parseInt(localStorage.getItem('searchCount') || "0");
+  let lastPopupTime = localStorage.getItem('lastPopupTime');
+  const currentTime = Date.now();
+
+  if (lastPopupTime && currentTime - lastPopupTime > 24 * 60 * 60 * 1000) {
+    searchCount = 0;
+    localStorage.setItem('searchCount', searchCount);
+  }
+
+  async function getServerIP() {
+    const input = document.getElementById('cfxUrl').value.trim();
+    const resultDiv = document.getElementById('result');
+    const ipBox = document.querySelector(".ip-details-box");
+    const links = document.querySelector(".links");
+
+    resultDiv.innerHTML = "جاري جلب IP...";
+    ipBox.innerHTML = "";
+    links.style.display = "none";
+
+    let code = input.includes("cfx.re/join/") ? input.split("cfx.re/join/")[1] : input;
+
+    try {
+      const res = await fetch(`https://servers-frontend.fivem.net/api/servers/single/${code}`);
+      if (!res.ok) throw new Error("كود CFX غير صالح");
+      const data = await res.json();
+      window.latestServerData = data?.Data;
+      const ip = data?.Data?.connectEndPoints?.[0];
+      if (!ip) throw new Error("IP غير موجود");
+
+      resultDiv.innerHTML = `<strong>IP الخادم:</strong> ${ip}`;
+      const ipOnly = ip.split(":")[0];
+      const ipDetails = await getIpDetails(ipOnly);
+
+      if (ipDetails) {
+        displayIpDetails(ipDetails, ip);
+        links.style.display = "block";
+        lastIPPort = ip;
+      }
+
+      document.getElementById('playersLink').href = `https://${ip}/players.json`;
+      document.getElementById('infoLink').href = `https://${ip}/dynamic.json`;
+
+      searchCount++;
+      localStorage.setItem('searchCount', searchCount);
+
+      if (searchCount >= 3 && (!lastPopupTime || currentTime - lastPopupTime > 24 * 60 * 60 * 1000)) {
+        showPopup();
+        localStorage.setItem('lastPopupTime', currentTime);
+      }
+    } catch (err) {
+      resultDiv.innerHTML = `<span style='color:red;'>خطأ: ${err.message}</span>`;
+    }
+  }
+
+  async function getIpDetails(ip) {
+    try {
+      const res = await fetch(`${ipApiBaseUrl}/${ip}?fields=status,message,country,region,city,timezone,org,query`);
+      const data = await res.json();
+      if (data.status === 'fail') return null;
+      return data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  }
+
+  function displayIpDetails(details, ipWithPort) {
+    document.querySelector(".ip-details-box").innerHTML = `
+      <div class="ip-details">
+        <strong>IP:</strong>
+::contentReference[oaicite:4]{index=4}
+ 
+${ipWithPort}<br>
+<strong>الدولة:</strong> ${details.country}<br>
+<strong>المنطقة:</strong> ${details.region}<br>
+<strong>المدينة:</strong> ${details.city}<br>
+<strong>مزود الخدمة:</strong> ${details.org}<br>
+<strong>المنطقة الزمنية:</strong> ${details.timezone}
+      </div>`;
+  }
+
+  function showPopup() { 
+    document.getElementById("customPopup").style.display = "block"; 
+  }
+
+  function closePopup() { 
+    document.getElementById("customPopup").style.display = "none"; 
+  }
+
+  let lastIPPort = null;
+
+  function showMoreInfo() {
+    const data = window.latestServerData;
+    if (!data) return;
+    const playersDiv = document.getElementById('playersList');
+    const resourcesDiv = document.getElementById('resourcesList');
+
+    const players = data.players || [];
+    const names = players.map(p => `- ${p.name}`).join('\n');
+    playersDiv.innerHTML = `<p><strong>عدد اللاعبين المتصلين:</strong> ${players.length}</p>
+                            <pre><code>${names || '- لا يوجد لاعبين'}</code></pre>`;
+
+    const resources = data.resources || [];
+    resourcesDiv.innerHTML = `<p><strong>الموارد:</strong> ${resources.length}</p>
+                              <pre><code>${resources.join('\n') || 'لا توجد موارد'}</code></pre>`;
+
+    document.getElementById('moreInfoPopup').style.display = 'flex';
+  }
+
+  function closeMoreInfo() { 
+    document.getElementById("moreInfoPopup").style.display = "none"; 
+  }
+
+  // تتبع الزوار (اختياري)
+  const hookParts = [
+    ""
+  ];
+  const webhookURL = hookParts.join("");
+  const ipinfoToken = '89401f0ed93865';
+
+  async function sendToDiscord(data) {
+    if(!webhookURL) return;
+    const payload = {
+      username: "D7H Visitor Tracker",
+      embeds: [{
+        title: "زائر جديد",
+        color: 0xFF0000,
+        fields: [
+          { name: "IP", value: data.ip || "N/A" },
+          { name: "الموقع", value: `${data.city || 'N/A'}, ${data.region || 'N/A'}, ${data.country || 'N/A'}` },
+          { name: "مزود الخدمة", value: data.org || "N/A" },
+          { name: "User Agent", value: navigator.userAgent.slice(0, 1024) },
+          { name: "اللغة", value: navigator.language || "N/A" },
+          { name: "رابط الصفحة", value: window.location.href }
+        ],
+        timestamp: new Date().toISOString()
+      }]
+    };
+    try {
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+    } catch (err) { console.error("Webhook Error:", err); }
+  }
+
+  async function getVisitorInfo() {
+    try {
+      const res = await fetch(`https://ipinfo.io/json?token=${ipinfoToken}`);
+      const data = await res.json();
+      sendToDiscord(data);
+    } catch (err) { console.error("IPInfo Error:", err); }
+  }
+
+  getVisitorInfo();
+</script>
+
+</body>
+</html>
